@@ -18,3 +18,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         password = validated_data['password']
         
         user = get_user_model()
+        new_user = user.objects.create(email=email,username=username,first_name=first_name,last_name=last_name)
+        
+        new_user.set_password(password)
+        new_user.save()
+        return new_user

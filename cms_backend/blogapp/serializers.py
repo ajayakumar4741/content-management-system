@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .models import *
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     
@@ -23,3 +24,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         new_user.set_password(password)
         new_user.save()
         return new_user
+    
+class SimpleAuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['id','username','first_name','last_name']
+    
+class BlogSerializer(serializers.ModelSerializer):
+    author = SimpleAuthorSerializer(read_only=True)
+    class Meta:
+        model =Blog
+        fields = '__all__'

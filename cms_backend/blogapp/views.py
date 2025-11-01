@@ -31,7 +31,7 @@ def blog_list(request):
     serializer = BlogSerializer(blogs, many=True)
     return Response(serializer.data)
 
-@api_view(['POST'])
+@api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_blog(request,pk):
     user = request.user
@@ -39,6 +39,30 @@ def update_blog(request,pk):
     if blog.author != user:
         return Response({'error':'Not authorized'},status=status.HTTP_403_FORBIDDEN)
     serializer = BlogSerializer(blog,data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_blog(request,pk):
+    blog = Blog.objects.get(id=pk)
+    if blog.author != request.user:
+        return Response({'error':'Not authorized'},status=status.HTTP_403_FORBIDDEN)
+    else:
+        blog.delete()
+        return Response({'success':'Blog deleted successfully'},status=status.HTTP_204_NO_CONTENT)
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    try:
+        profile,created = UserProfile.objects.get_or_create(user=request.user)  # Access the related UserProfile via OneToOneField
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = UpdateUserProfileSerializer(profile,data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)

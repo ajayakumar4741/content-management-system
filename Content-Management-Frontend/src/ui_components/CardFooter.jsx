@@ -1,13 +1,16 @@
 import React from 'react'
 import pic from '../images/pic.jpg'
-function CardFooter() {
+import { Link } from 'react-router-dom';
+import { BASE_URL } from '@/api';
+
+function CardFooter({blog}) {
  return (
     <Link to={`/profile/${blog.author.username}`}>
     <div className="flex items-center gap=4 ">
       <span className="flex items-center gap-2">
         <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
           <img
-            src={pic}
+            src={`${BASE_URL}${blog.author.user_profile}`}
             className="c rounded-full w-full h-full object-cover"
           />
         </div>

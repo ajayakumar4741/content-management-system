@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from .models import *
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['id','email','username','first_name','last_name','password']
         extra_kwargs = {
             'password':{'write_only':True}
@@ -18,16 +18,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         last_name = validated_data['last_name']
         password = validated_data['password']
         
-        user = get_user_model()
-        new_user = user.objects.create(email=email,username=username,first_name=first_name,last_name=last_name)
         
-        new_user.set_password(password)
-        new_user.save()
-        return new_user
+        user = User.objects.create(email=email,username=username,first_name=first_name,last_name=last_name)
+        
+        user.set_password(password)
+        user.save()
+        UserProfile.objects.create(user=user)
+        return user
     
 class SimpleAuthorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['id','username','first_name','last_name']
         
 class UpdateUserProfileSerializer(serializers.ModelSerializer):

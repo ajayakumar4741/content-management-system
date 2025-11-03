@@ -1,27 +1,28 @@
 import React from 'react'
-import pic from '../images/pic.jpg'
+
 import { Link } from 'react-router-dom';
 import { BASE_URL } from '@/api';
+import { FormatDate } from '@/services/FormatDate';
 
 function CardFooter({blog}) {
  return (
-    <Link to={`/profile/${blog.author.username}`}>
+    <Link to={`/profile/${blog.author.full_name}`}>
     <div className="flex items-center gap=4 ">
       <span className="flex items-center gap-2">
         <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
           <img
-            src={`${BASE_URL}${blog.author.user_profile}`}
+            src={`${BASE_URL}${blog.author.profile_picture}`}
             className="c rounded-full w-full h-full object-cover"
           />
         </div>
 
         <small className="text-[#97989F] text-[12px] font-semibold">
-          {blog.author.first_name} {blog.author.last_name}
+          {blog.author.full_name} 
         </small>
       </span>
 
       <small className="text-[#97989F] text-[12px] font-semibold ml-3">
-        
+        {FormatDate(blog.published_at)}
       </small>
     </div>
     </Link>

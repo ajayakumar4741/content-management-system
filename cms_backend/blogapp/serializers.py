@@ -26,10 +26,19 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         UserProfile.objects.create(user=user)
         return user
     
+
+    
 class SimpleAuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','username','first_name','last_name']
+        
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = SimpleAuthorSerializer(read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'user', 'full_name', 'bio', 'profile_picture', 'facebook', 'twitter', 'instagram', 'youtube']
         
 class UpdateUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,7 +46,7 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
         fields = ['full_name','bio','profile_picture','facebook','twitter','youtube','instagram']
     
 class BlogSerializer(serializers.ModelSerializer):
-    author = SimpleAuthorSerializer(read_only=True)
+    author = UserProfileSerializer(read_only=True)
     class Meta:
         model =Blog
         fields = '__all__'

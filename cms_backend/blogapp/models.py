@@ -28,7 +28,7 @@ class Blog(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True,blank=True,max_length=255)
     content = models.TextField()
-    author = models.ForeignKey(User,on_delete=models.SET_NULL,related_name='blogs',null=True)
+    author = models.ForeignKey(UserProfile,on_delete=models.SET_NULL,related_name='blogs',null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     published_at = models.DateTimeField(blank=True,null=True)

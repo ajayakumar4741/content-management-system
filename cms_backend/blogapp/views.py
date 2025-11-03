@@ -5,7 +5,19 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import *
+from rest_framework.pagination import PageNumberPagination
 # Create your views here.
+
+class BlogListPagination(PageNumberPagination):
+    page_size = 3
+    
+@api_view(["GET"])
+def blog_list(request):
+    blogs = Blog.objects.all()
+    paginator = BlogListPagination()
+    paginated_blogs = paginator.paginate_queryset(blogs, request)
+    serializer = BlogSerializer(paginated_blogs, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 @api_view(['POST'])
 def registerUser(request):

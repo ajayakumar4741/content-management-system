@@ -4,10 +4,12 @@ import BlogWriter from "@/ui_components/BlogWriter";
 
 import { HiPencilAlt } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
+import { useQuery } from '@tanstack/react-query';
 
 
 
 function DetailPage() {
+  const data = useQuery()
   return (
     <>
       <div className="padding-dx max-container py-9">

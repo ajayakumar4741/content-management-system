@@ -9,34 +9,34 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-function PagePagination() {
+function PagePagination({numOfBlog,handleSetPage,page,increasePage,decreasePage}) {
+    const numbers = Array.from({length:numOfBlog}, (_, i) => i+1 )
+    const firstNumber = numbers[0]
+    const lastNumber = numbers[numbers.length -1]
+
   return (
     <div>
       <Pagination className='my-6 dark:text-white'>
       <PaginationContent>
-        <PaginationItem>
+
+        { page === firstNumber || (<PaginationItem onClick={increasePage}>
           <PaginationPrevious href="#" />
-        </PaginationItem>
+        </PaginationItem>)}
 
-        <PaginationItem>
-          <PaginationLink href="#">1</PaginationLink>
-        </PaginationItem>
-
-        <PaginationItem>
-          <PaginationLink href="#" isActive>
-            2
-          </PaginationLink>
-        </PaginationItem>
-
-        <PaginationItem>
-          <PaginationLink href="#">3</PaginationLink>
-        </PaginationItem>
-
+          {numbers.map((num) => (<PaginationItem key={num} onClick={() => handleSetPage(num)}>
+            {num === page ? (<PaginationLink href="#" isActive>{num}</PaginationLink>) : (<PaginationLink href="#">{num}</PaginationLink>)}
+          
+        </PaginationItem>))}
         
 
-        <PaginationItem>
+        
+        
+
+        
+     {page === lastNumber || (<PaginationItem onClick={decreasePage}>
           <PaginationNext href="#" />
-        </PaginationItem>
+        </PaginationItem>)}
+       
 
       </PaginationContent>
     </Pagination>

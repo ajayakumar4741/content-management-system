@@ -8,4 +8,6 @@ urlpatterns = [
     path('update_blog/<int:pk>/',update_blog,name='update_blog'),
     path('delete_blog/<int:pk>/',delete_blog,name='delete_blog'),
     path('update_profile/',update_profile,name='update_profile'),
+    path("blog_pagination", blog_pagination, name="blog_pagination"),
+    path("blogs/<slug:slug>/", blogs, name="blogs"),
 ]

@@ -2,7 +2,7 @@ import React from 'react'
 import Spinner from './Spinner'
 import BlogCard from './BlogCard'
 
-function BlogContainer({isPending,blogs=[], title='Latest Posts'}) {
+function BlogContainer({isPending,blogs=[], title='🧑‍💻Latest Posts'}) {
 
    if(isPending){
     return <Spinner />

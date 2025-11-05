@@ -16,14 +16,27 @@ function HomePage() {
   })
  
   console.log(data)
-  const blogs = data || []
+  const blogs = data?.results || []
   const numOfBlog = Math.ceil(data?.count/numOfBlogPages)
   console.log(numOfBlog)
+
+  function handleSetPage (val){
+    setPage(val)
+  }
+
+  function increasePage(){
+    setPage((curr)=>curr+1)
+  }
+
+  function decreasePage(){
+    setPage((curr)=>curr-1)
+  }
+
   return (
     <>
       <Header />
       <BlogContainer isPending={isPending} blogs={blogs} />
-      <PagePagination page={page} />
+      <PagePagination numOfBlog={numOfBlog} handleSetPage={handleSetPage} page={page} increasePage={increasePage} decreasePae={decreasePage} />
     </>
   )
 }

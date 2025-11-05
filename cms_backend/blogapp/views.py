@@ -12,7 +12,7 @@ class BlogListPagination(PageNumberPagination):
     page_size = 3
     
 @api_view(["GET"])
-def blog_list(request):
+def blog_pagination(request):
     blogs = Blog.objects.all()
     paginator = BlogListPagination()
     paginated_blogs = paginator.paginate_queryset(blogs, request)
@@ -41,6 +41,13 @@ def create_blog(request):
 def blog_list(request):
     blogs = Blog.objects.all()
     serializer = BlogSerializer(blogs, many=True)
+    return Response(serializer.data)
+
+# to get blogs with slug or id
+@api_view(['GET'])
+def blogs(request,slug):
+    blog = Blog.objects.get(slug=slug)
+    serializer = BlogSerializer(blog)
     return Response(serializer.data)
 
 @api_view(['PUT'])

@@ -12,14 +12,18 @@ function NavBar({handleDarkMode,darkMode}) {
     TechFolio
     </Link>
     <ul className="flex items-center  justify-end gap-9 text-[#3B3C4A] lg:flex-1 max-md:hidden dark:text-[#FFFFFF]">
-        <li>
+        {/* <li>
             <NavLink className={({isActive})=> isActive ? 'active':'' } to='profile/'>
             Hi, Ajay
             </NavLink>
-            </li>
+            </li> */}
         <li>Login</li>
         <li>Logout</li>
-        <li>Register</li>
+        <li>
+            <NavLink to='/signup' className={({isActive})=> isActive ? 'active':'' }>
+            Register
+            </NavLink>
+            </li>
         <li className='font-semibold'>Create Post</li>
     </ul>
     <Switch onCheckedChange={handleDarkMode} checked={darkMode} />

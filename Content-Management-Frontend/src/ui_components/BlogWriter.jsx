@@ -3,8 +3,10 @@ import React from 'react'
 import pic from "../images/pic.jpg"
 
 import { Link } from "react-router-dom"
+import { BASE_URL } from '@/api'
+import { FormatDate } from '@/services/FormatDate'
 
-function BlogWriter() {
+function BlogWriter({blog}) {
   return (
     <div>
        <Link to={''}>
@@ -14,18 +16,18 @@ function BlogWriter() {
       <span className="flex items-center gap-2">
         <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
           <img
-            src={pic}
+            src={`${BASE_URL}${blog.author.profile_picture}`}
             className="c rounded-full w-full h-full object-cover"
           />
         </div>
 
         <small className="text-[#696A75] text-[14px]">
-          
+          {blog.author.full_name}
         </small>
       </span>
 
       <small className="text-[#696A75] text-[14px] ml-3">
-        
+        {FormatDate (blog.created_at)}
       </small>
 
 

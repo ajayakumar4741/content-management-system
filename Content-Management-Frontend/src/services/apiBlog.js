@@ -19,3 +19,17 @@ export async function getBlog(slug){
         throw new Error(err.message)
     }
 }
+
+export async function registerUser(data){
+    try{
+        const response = api.post("register/",data)
+        return response.data
+    }
+    catch(error){
+        console.log(error)
+        if(error.status == 400){
+            throw new Error("Username already exist")
+        }
+        throw new Error(error)
+    }
+}

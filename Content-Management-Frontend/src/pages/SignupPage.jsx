@@ -4,13 +4,28 @@ import { Label } from "@/components/ui/label"
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Textarea } from "@/components/ui/textarea"
+import { useMutation } from '@tanstack/react-query';
+import { registerUser } from '@/services/apiBlog';
+import { toast } from 'react-toastify';
+import SmallSpinner from '@/ui_components/SmallSpinner';
 
 function SignupPage() {
     const {register,handleSubmit,formState,reset,watch} = useForm()
     const {errors} = formState
     const password = watch("password")
+    
+    const mutation = useMutation({
+      mutationFn:(data) => registerUser(data),
+      onSuccess: () => {
+        toast.success("Account created successfully!!! ")
+        reset()
+      },
+      onError: (err) => {
+        toast.error(err.message)
+      }
+    })
     function onSubmitData(data){
-        console.log(data)
+        mutation.mutate(data)
     }
   return (
     <form
@@ -184,7 +199,7 @@ function SignupPage() {
       <div className="w-full flex items-center justify-center flex-col my-4">
          
           <button className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2">
-            
+            {mutation.isPending? <> <SmallSpinner/> <small className='text-[16px]'>Creating user...</small> </>: <small className='text-[16px]'>Signup</small>}
               
             
           </button>

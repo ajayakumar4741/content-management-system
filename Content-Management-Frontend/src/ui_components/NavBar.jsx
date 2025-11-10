@@ -17,14 +17,19 @@ function NavBar({handleDarkMode,darkMode}) {
             Hi, Ajay
             </NavLink>
             </li> */}
-        <li>Login</li>
+        <li><NavLink to='/login' className={({isActive})=> isActive ? 'active':'' }>
+            Signin
+            </NavLink></li>
         <li>Logout</li>
         <li>
             <NavLink to='/signup' className={({isActive})=> isActive ? 'active':'' }>
             Register
             </NavLink>
             </li>
-        <li className='font-semibold'>Create Post</li>
+            
+        <li className='font-semibold'><NavLink to='/create_post' className={({isActive})=> isActive ? 'active':'' }>
+            Create Post
+            </NavLink></li>
     </ul>
     <Switch onCheckedChange={handleDarkMode} checked={darkMode} />
     <FaHamburger className="text-2xl cursor-pointer hidden max-md:block dark:text-white" onClick={()=>setShowNavBar(curr => !curr)}/>

@@ -6,9 +6,14 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 
 function LoginPage() {
+  const {register,handleSubmit,formState} = useForm()
+  const {errors} = formState
+  function onSubmit(){
+    console.log(data)
+  } 
   return (
     <form
-     
+     onSubmit={handleSubmit()}
       className="md:px-16 px-8 py-6 flex flex-col mx-auto my-9 
     items-center gap-4 w-fit rounded-lg bg-[#FFFFFF] shadow-xl 
     dark:text-white dark:bg-[#141624]"

@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import SignupPage from './pages/SignupPage'
 import CreatePostPage from './pages/CreatePostPage'
 import LoginPage from './pages/LoginPage'
+import ProtectedRoute from './ui_components/ProtectedRoute'
 
 const queryClient = new QueryClient()
 function App() {
@@ -19,7 +20,7 @@ function App() {
       <Route index element={<HomePage />} />
       <Route path="blogs/:slug" element={<DetailPage />} />
       <Route path='/signup' element={<SignupPage />} />
-      <Route path='/create_post' element={<CreatePostPage />} />
+      <Route path='/create_post' element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
       <Route path='/login' element={<LoginPage />} />
       {/* <Route path="profile" element={<ProfilePage />} /> */}
     </Route>

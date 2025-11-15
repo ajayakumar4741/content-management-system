@@ -1,19 +1,38 @@
 import React from 'react'
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import SmallSpinner from '@/ui_components/SmallSpinner';
+import { signin } from '@/services/apiBlog';
 
 function LoginPage() {
   const {register,handleSubmit,formState} = useForm()
   const {errors} = formState
-  function onSubmit(){
+  const location = useLocation()
+  const navigate = useNavigate()
+  const mutation = useMutation({
+    mutationFn: (data) => signin(data),
+    onSuccess: (response) => {
+      localStorage.setItem("access",response.access)
+      localStorage.setItem("refresh",response.refresh)
+      toast.success('Signin successfully!!!')
+      const from = location?.state?.from?.pathname || '/'
+      navigate(from,{replace:true})
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  })
+  function onSubmit(data){
     console.log(data)
+    mutation.mutate(data)
   } 
   return (
     <form
-     onSubmit={handleSubmit()}
+     onSubmit={handleSubmit(onSubmit)}
       className="md:px-16 px-8 py-6 flex flex-col mx-auto my-9 
     items-center gap-4 w-fit rounded-lg bg-[#FFFFFF] shadow-xl 
     dark:text-white dark:bg-[#141624]"
@@ -23,7 +42,7 @@ function LoginPage() {
         <p>Welcome back! Log in to continue.</p>
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="username" className="dark:text-[97989F]">
           Username
         </Label>
@@ -40,7 +59,7 @@ function LoginPage() {
         )}
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="password">Password</Label>
         <Input
           type="password"
@@ -57,15 +76,7 @@ function LoginPage() {
 
       <div className="w-full flex items-center justify-center flex-col my-4">
         <button disabled={mutation.isPending} className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2">
-          {mutation.isPending ? (
-            <>
-              {" "}
-              <SmallSpinner />{" "}
-              <SmallSpinnerText text="Logging in..." />
-            </>
-          ) : (
-            <SmallSpinnerText text="Signin" />
-          )}
+          {mutation.isPending ? (<> <SmallSpinner /> <small className='text-[16px]'>Loging up...</small></>) : (<small className='text-[16px]'>Login</small>) }
         </button>
         <p className="text-[14px]">
           Don't have an account? <Link to="/signup">signup</Link>

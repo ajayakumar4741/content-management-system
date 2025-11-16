@@ -1,33 +1,47 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AppLayout from './ui_components/AppLayout'
 import HomePage from './pages/HomePage'
 import DetailPage from './pages/DetailPage'
 import ProfilePage from './pages/ProfilePage'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
 import SignupPage from './pages/SignupPage'
 import CreatePostPage from './pages/CreatePostPage'
 import LoginPage from './pages/LoginPage'
 import ProtectedRoute from './ui_components/ProtectedRoute'
+import { getUsername } from './services/apiBlog'
 
-const queryClient = new QueryClient()
+
 function App() {
+  const [username,setUsername] = useState(null)
+  const [isAuthenticated,setIsAuthenticated] = useState(false)
+  
+  const {data} = useQuery({
+    queryKey:['username'],
+    queryFn: getUsername
+  })
+  useEffect(function (){
+    if (data){
+      setUsername(data.username)
+      setIsAuthenticated(true)
+    }
+  },[data])
   return (
-    <QueryClientProvider client={queryClient}>
+    
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AppLayout />}>
+        <Route path="/" element={<AppLayout isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} username={username} setUsername={setUsername} />}>
       <Route index element={<HomePage />} />
       <Route path="blogs/:slug" element={<DetailPage />} />
       <Route path='/signup' element={<SignupPage />} />
       <Route path='/create_post' element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
-      <Route path='/login' element={<LoginPage />} />
+      <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} />} />
       {/* <Route path="profile" element={<ProfilePage />} /> */}
     </Route>
 
       </Routes>
     </BrowserRouter>
-    </QueryClientProvider>
+  
   )
 }
 

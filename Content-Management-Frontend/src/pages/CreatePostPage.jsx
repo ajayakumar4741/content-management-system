@@ -11,12 +11,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useForm } from 'react-hook-form';
+import { Textarea } from '@/components/ui/textarea';
+import InputErrors from '@/ui_components/InputErrors';
+import { useNavigate } from 'react-router-dom';
 
 function CreatePostPage() {
+  const {register,handleSubmit,formState,setValue} = useForm()
+  const {errors} = formState
+  const navigate = useNavigate()
+  function onSubmit(data){
+    console.log(data)
+  }
   return (
     
     <form
-      
+      onSubmit={handleSubmit(onSubmit)}
       className={`${
          "h-[90%] overflow-auto"
       }  md:px-16 px-8 py-6 flex flex-col mx-auto my-9 items-center gap-6 w-fit rounded-lg bg-[#FFFFFF] shadow-xl dark:text-white dark:bg-[#141624]`}
@@ -31,39 +41,37 @@ function CreatePostPage() {
         </p>
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="title" className="dark:text-[97989F]">
           Title
         </Label>
         <Input
           type="text"
           id="title"
-          
+          {...register('title',{required:'Blog title is required',minLength:{value:3,message:'Title have minimum 3 characters required'}})}
           placeholder="Give your post a title"
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[400px] max-sm:w-[300px] max-sm:text-[14px]"
         />
 
-        {errors?.title?.message && <InputError error={errors.title.message} />}
+        {errors?.title?.message && <InputErrors error={errors.title.message} />}
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="content">Content</Label>
         <Textarea
           id="content"
           placeholder="Write your blog post"
-          
+          {...register('content',{required:'Blog content is required',minLength:{value:10,message:'Content have minimum 10 characters required'}})}
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[180px]  w-[400px] text-justify max-sm:w-[300px] max-sm:text-[14px]"
         />
-        {errors?.content?.message && (
-          <InputError error={errors.content.message} />
-        )}
+        {errors?.content?.message && <InputErrors error={errors.content.message} />}
       </div>
 
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-2 mb-2">
         <Label htmlFor="category">Category</Label>
 
         <Select
-          
+          {...register('category',{required:'Blog category is required'})} onValueChange={(value) => setValue('category',value)}
         >
           <SelectTrigger className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-full max-sm:w-[300px] max-sm:text-[14px]">
             <SelectValue placeholder="Select a category" />
@@ -80,42 +88,32 @@ function CreatePostPage() {
           </SelectContent>
         </Select>
 
-        
+        {errors?.category?.message && <InputErrors error={errors.category.message} />}
       </div>
 
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-2 mb-2">
         <Label htmlFor="featured_image">Featured Image</Label>
         <Input
-          
+          type='file'
+          id='picture'
+          {...register('featured_image',{required:'Blog featured image is required'})}
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-full max-sm:w-[300px] max-sm:text-[14px]"
         />
 
-        
+        {errors?.featured_image?.message && <InputErrors error={errors.featured_image.message} />}
       </div>
 
       <div className="w-full flex items-center justify-center flex-col my-4">
-        {blog ? (
+        
+          
+    
           <button
-            disabled={updateMutation.isPending}
+          
             className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2"
           >
-            
+          Create Post
           </button>
-        ) : (
-          <button
-            disabled={mutation.isPending}
-            className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2"
-          >
-            {mutation.isPending ? (
-              <>
-                {" "}
-                <SmallSpinner /> <SmallSpinnerText text="Creating post..." />{" "}
-              </>
-            ) : (
-              <SmallSpinnerText text="Create post" />
-            )}
-          </button>
-        )}
+        
       </div>
     </form>
   

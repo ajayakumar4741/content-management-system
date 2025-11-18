@@ -4,7 +4,7 @@ import Spinner from './Spinner'
 import { Navigate } from 'react-router-dom'
 
 function ProtectedRoute({children}) {
-    const {isAuthorized, setAuthorized} = useState(null)
+    const [isAuthorized, setAuthorized] = useState(null)
 
     useEffect(function(){
       authorize().catch(() => setAuthorized(false))

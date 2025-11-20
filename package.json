@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "eslint": "^9.39.1"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
   }
 }

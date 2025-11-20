@@ -15,13 +15,34 @@ import { useForm } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import InputErrors from '@/ui_components/InputErrors';
 import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createBlog } from '@/services/apiBlog';
+import { toast } from 'react-toastify';
+import SmallSpinnerText from '@/ui_components/SmallSpinnerText';
 
 function CreatePostPage() {
   const {register,handleSubmit,formState,setValue} = useForm()
   const {errors} = formState
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: (data) => createBlog(data),
+    onSuccess: () => {
+      toast.success("Blog created successfully !!!")
+      queryClient.invalidateQueries({queryKey: ['blogs']})
+      navigate('/')
+    }
+  })
   function onSubmit(data){
-    console.log(data)
+    const formData = new FormData()
+    formData.append('title',data.title)
+    formData.append('content',data.content)
+    formData.append('category',data.category)
+    if(data.featured_image){
+      formData.append('featured_image',data.featured_image[0])
+    }
+    mutation.mutate(formData)
   }
   return (
     
@@ -111,7 +132,7 @@ function CreatePostPage() {
           
             className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2"
           >
-          Create Post
+          {mutation.isPending ? <> <SmallSpinner/> <SmallSpinnerText text='Posting...'/> </>: <SmallSpinnerText text='Create Post'/>}
           </button>
         
       </div>

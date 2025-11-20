@@ -30,7 +30,7 @@ def registerUser(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_blog(request):
-    user = request.user
+    user = request.user.user_profile
     serializer = BlogSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(author=user)
@@ -53,7 +53,7 @@ def blogs(request,slug):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_blog(request,pk):
-    user = request.user
+    user = request.user.user_profile
     blog = Blog.objects.get(id=pk)
     if blog.author != user:
         return Response({'error':'Not authorized'},status=status.HTTP_403_FORBIDDEN)
@@ -67,7 +67,7 @@ def update_blog(request,pk):
 @permission_classes([IsAuthenticated])
 def delete_blog(request,pk):
     blog = Blog.objects.get(id=pk)
-    if blog.author != request.user:
+    if blog.author != request.user.user_profile:
         return Response({'error':'Not authorized'},status=status.HTTP_403_FORBIDDEN)
     else:
         blog.delete()
@@ -90,7 +90,7 @@ def update_profile(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_username(request):
-    user = request.user
-    username = user.username
+    user = request.user.user_profile
+    username = user.full_name
     print(username)
     return Response({"username":username})

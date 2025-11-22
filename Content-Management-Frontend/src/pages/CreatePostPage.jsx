@@ -20,8 +20,8 @@ import { createBlog } from '@/services/apiBlog';
 import { toast } from 'react-toastify';
 import SmallSpinnerText from '@/ui_components/SmallSpinnerText';
 
-function CreatePostPage() {
-  const {register,handleSubmit,formState,setValue} = useForm()
+function CreatePostPage({blog}) {
+  const {register,handleSubmit,formState,setValue} = useForm({defaultValues: blog ? blog : {}})
   const {errors} = formState
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -48,13 +48,13 @@ function CreatePostPage() {
     
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`${
+      className={`${blog &&
          "h-[90%] overflow-auto"
-      }  md:px-16 px-8 py-6 flex flex-col mx-auto my-9 items-center gap-6 w-fit rounded-lg bg-[#FFFFFF] shadow-xl dark:text-white dark:bg-[#141624]`}
+      }  md:px-16 px-8 py-10 flex flex-col mx-auto my-9 items-center gap-6 w-fit rounded-lg bg-[#FFFFFF] shadow-xl dark:text-white dark:bg-[#141624]`}
     >
-      <div className="flex flex-col gap-2 justify-center items-center mb-2">
+      <div className="flex flex-col gap-3 justify-center items-center mb-2">
         <h3 className="font-semibold text-2xl max-sm:text-xl">
-          
+          {blog ? 'Update Blog' : 'Create Blog'}
         </h3>
 
         <p className="max-sm:text-[14px]">
@@ -93,6 +93,7 @@ function CreatePostPage() {
 
         <Select
           {...register('category',{required:'Blog category is required'})} onValueChange={(value) => setValue('category',value)}
+          defaultValue = {blog ? blog.category : ''}
         >
           <SelectTrigger className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-full max-sm:w-[300px] max-sm:text-[14px]">
             <SelectValue placeholder="Select a category" />

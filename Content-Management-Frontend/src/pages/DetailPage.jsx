@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Badge from "@/ui_components/Badge";
 import BlogWriter from "@/ui_components/BlogWriter";
 
@@ -9,10 +9,16 @@ import { useParams } from 'react-router-dom';
 import Spinner from '@/ui_components/Spinner';
 import { getBlog } from '@/services/apiBlog';
 import { BASE_URL } from '@/api';
+import Modal from '@/ui_components/Modal';
+import CreatePostPage from './CreatePostPage';
 
 
 
-function DetailPage() {
+function DetailPage({username,isAuthenticated}) {
+  const [showModal,setShowModal] = useState(false)
+  function toggleModal(){
+    setShowModal(curr => !curr)
+  }
   const {slug} = useParams()
   const {isPending,isError,error,data:blog} = useQuery({
     queryKey: ['blogs',slug],
@@ -33,16 +39,16 @@ function DetailPage() {
             {blog.title}
           </h2>
 
-            <span className="flex justify-between items-center gap-2">
-              <HiPencilAlt  className="dark:text-white text-3xl cursor-pointer" />
+            {isAuthenticated && username === blog.author.full_name && <span className="flex justify-between items-center gap-2">
+              <HiPencilAlt onClick={toggleModal}  className="dark:text-white text-3xl cursor-pointer" />
 
               <MdDelete  className="dark:text-white text-3xl cursor-pointer" />
-            </span>
+            </span>}
           
         </div>
 
         <BlogWriter blog={blog} />
-
+              <br />
         <div className="w-full aspect-video">
   <img
     className="w-full h-full object-fill rounded-sm"
@@ -55,7 +61,9 @@ function DetailPage() {
         </p>
       </div>
 
-     
+     {showModal && <Modal>
+      <CreatePostPage blog={blog} />
+     </Modal>}
     </>
   )
 }

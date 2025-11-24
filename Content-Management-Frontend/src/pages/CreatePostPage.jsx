@@ -16,15 +16,30 @@ import { Textarea } from '@/components/ui/textarea';
 import InputErrors from '@/ui_components/InputErrors';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createBlog } from '@/services/apiBlog';
+import { createBlog, updateBlog } from '@/services/apiBlog';
 import { toast } from 'react-toastify';
 import SmallSpinnerText from '@/ui_components/SmallSpinnerText';
+import LoginPage from './LoginPage';
 
-function CreatePostPage({blog}) {
+function CreatePostPage({blog,isAuthenticated}) {
   const {register,handleSubmit,formState,setValue} = useForm({defaultValues: blog ? blog : {}})
   const {errors} = formState
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const blogID = blog?.id
+ 
+  const updateMutation = useMutation({
+    mutationFn: ({data,id}) => updateBlog(data,id),
+    onSuccess: () => {
+      navigate('/')
+      toast.success('Your post has been updated successfully !!!')
+      console.log("Your post has been updated successfully !!!")
+    },
+    onError: (err) => {
+      toast.error(err.message)
+      console.log(err)
+    }
+  })
 
   const mutation = useMutation({
     mutationFn: (data) => createBlog(data),
@@ -39,10 +54,20 @@ function CreatePostPage({blog}) {
     formData.append('title',data.title)
     formData.append('content',data.content)
     formData.append('category',data.category)
-    if(data.featured_image){
+    if(data.featured_image && data.featured_image[0]){
+      if(data.featured_image[0] != '/'){
       formData.append('featured_image',data.featured_image[0])
+      }
     }
+    if(blog && blogID){
+      updateMutation.mutate({data:formData,id:blogID})
+    }
+    else {
     mutation.mutate(formData)
+    }
+  }
+  if(isAuthenticated === false){
+    return <LoginPage />
   }
   return (
     
@@ -58,7 +83,7 @@ function CreatePostPage({blog}) {
         </h3>
 
         <p className="max-sm:text-[14px]">
-          
+          {blog ? 'Do you want to update post ?' : 'Create your post and share your idea...'}
         </p>
       </div>
 
@@ -118,25 +143,32 @@ function CreatePostPage({blog}) {
         <Input
           type='file'
           id='picture'
-          {...register('featured_image',{required:'Blog featured image is required'})}
+          {...register('featured_image',{required: blog ? false : 'Blog featured image is required'})}
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-full max-sm:w-[300px] max-sm:text-[14px]"
         />
 
         {errors?.featured_image?.message && <InputErrors error={errors.featured_image.message} />}
       </div>
-
+      
       <div className="w-full flex items-center justify-center flex-col my-4">
         
           
-    
-          <button
+        {blog ? 
+          (<button
+          
+            className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2"
+          >
+          {mutation.isPending ? <> <SmallSpinner/> <SmallSpinnerText text='Posting...'/> </>: <SmallSpinnerText text='Updating Post'/>}
+          </button>)
+          :
+          (<button
           
             className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2"
           >
           {mutation.isPending ? <> <SmallSpinner/> <SmallSpinnerText text='Posting...'/> </>: <SmallSpinnerText text='Create Post'/>}
-          </button>
-        
+          </button>)}
       </div>
+
     </form>
   
   )

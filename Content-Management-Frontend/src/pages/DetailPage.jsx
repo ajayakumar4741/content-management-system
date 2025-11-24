@@ -55,7 +55,7 @@ function DetailPage({username,isAuthenticated}) {
     src={`${BASE_URL}${blog.featured_image}`}
   />
 </div>
-
+<br />
         <p className="text-[16px] leading-[2rem] text-justify text-[#3B3C4A] dark:text-[#BABABF]">
           {blog.content}
         </p>

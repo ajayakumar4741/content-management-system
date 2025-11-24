@@ -34,7 +34,7 @@ function App() {
       <Route index element={<HomePage />} />
       <Route path="blogs/:slug" element={<DetailPage username={username} isAuthenticated={isAuthenticated} />} />
       <Route path='/signup' element={<SignupPage />} />
-      <Route path='/create_post' element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
+      <Route path='/create_post' element={<ProtectedRoute><CreatePostPage isAuthenticated={isAuthenticated} /></ProtectedRoute>} />
       <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} />} />
       {/* <Route path="profile" element={<ProfilePage />} /> */}
     </Route>

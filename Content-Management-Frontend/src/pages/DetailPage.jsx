@@ -4,18 +4,20 @@ import BlogWriter from "@/ui_components/BlogWriter";
 
 import { HiPencilAlt } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
-import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '@/ui_components/Spinner';
-import { getBlog } from '@/services/apiBlog';
+import { deleteBlog, getBlog } from '@/services/apiBlog';
 import { BASE_URL } from '@/api';
 import Modal from '@/ui_components/Modal';
 import CreatePostPage from './CreatePostPage';
+import { toast } from 'react-toastify';
 
 
 
 function DetailPage({username,isAuthenticated}) {
   const [showModal,setShowModal] = useState(false)
+  const navigate = useNavigate()
   function toggleModal(){
     setShowModal(curr => !curr)
   }
@@ -26,6 +28,26 @@ function DetailPage({username,isAuthenticated}) {
   })
   console.log(blog)
 
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deleteBlog(id),
+    onSuccess: () => {
+      toast.success("Your blog has been deleted successfully !!!")
+      navigate("/")
+    },
+    onError: (err) => {
+      console.log(err)
+      toast.error(err.message)
+    }
+  })
+  const blogID = blog?.id
+  function handleDeleteBlog(){
+    const popUp = window.confirm("Are you sure you want to delete this post?")
+    if(!popUp){
+      return
+    }else{
+      deleteMutation.mutate(blogID)
+    }
+  }
   if(isPending){
     return <Spinner/>
   }
@@ -42,7 +64,7 @@ function DetailPage({username,isAuthenticated}) {
             {isAuthenticated && username === blog.author.full_name && <span className="flex justify-between items-center gap-2">
               <HiPencilAlt onClick={toggleModal}  className="dark:text-white text-3xl cursor-pointer" />
 
-              <MdDelete  className="dark:text-white text-3xl cursor-pointer" />
+              <MdDelete onClick={handleDeleteBlog} className="dark:text-white text-3xl cursor-pointer" />
             </span>}
           
         </div>

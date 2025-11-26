@@ -154,7 +154,7 @@ function SignupPage() {
         </button>
 
         <p className="text-[14px] mt-2">
-          Already have an account? <Link to="/signin" className="text-blue-600 underline">Sign In</Link>
+          Already have an account? <Link to="/login" className="text-blue-600 underline">Sign In</Link>
         </p>
       </div>
     </form>

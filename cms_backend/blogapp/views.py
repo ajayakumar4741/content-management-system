@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .serializers import *
 from rest_framework.response import Response
+from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -94,3 +95,11 @@ def get_username(request):
     username = user.full_name
     print(username)
     return Response({"username":username})
+
+@api_view(['GET'])
+def get_userinfo(request,full_name):
+    User = UserProfile
+    user = User.objects.get(full_name=full_name)
+    serializer = UserInfoSerializer(user)
+    return Response(serializer.data)
+

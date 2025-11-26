@@ -1,22 +1,27 @@
 import React from 'react'
 import pic from '../images/pic.jpg'
-function Hero() {
+import { BASE_URL } from '@/api'
+import { HiPencilAlt } from 'react-icons/hi'
+import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
+import { BsTwitterX } from 'react-icons/bs'
+
+function Hero({userInfo}) {
   return (
     <div className="padding-x py-9 max-container flex flex-col items-center justify-center gap-4 bg-[#F6F6F7] dark:bg-[#242535] rounded-md">
       <div className="flex gap-4">
         <div className="w-[70px] h-[70px] rounded-full overflow-hidden">
           <img
-            src={pic}
+            src={`${BASE_URL}${userInfo?.profile_picture}`}
             className="w-[70px] h-[70px] rounded-full object-cover"
           />
         </div>
 
         <span>
           <p className="text-[18px] text-[#181A2A] dark:text-white">
-            
+            {userInfo?.full_name}
           </p>
           <p className="text-[14px] text-[#696A75] font-thin dark:text-[#BABABF]">
-            
+            {userInfo?.job_title || ''}
           </p>
         </span>
 
@@ -31,7 +36,7 @@ function Hero() {
       </div>
 
       <p className="text-[#3B3C4A] text-[16px] max-md:leading-[2rem] lg:leading-normal lg:mx-[200px] text-center dark:text-[#BABABF]">
-        
+        {userInfo?.bio}
       </p>
 
       <div className="flex gap-4 justify-center items-center text-white text-xl">

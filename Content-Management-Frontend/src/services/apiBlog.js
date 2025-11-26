@@ -81,3 +81,26 @@ export async function updateBlog(data,id){
         throw new Error(err.message)
     }
 }
+
+export async function deleteBlog(id){
+    try{
+    const response = await api.post(`delete_blog/${id}/`)
+    return response.data
+    }
+    catch(err){
+        if(err.response){
+            throw new Error(err.response?.data?.message || 'Failed to update blog !!!')
+        }
+        throw new Error(err.message)
+    }
+}
+
+export async function getUserInfo(full_name){
+    try{
+    const response = await api.get(`get_userinfo/${full_name}/`)
+    return response.data
+    }
+    catch(err){
+        throw new Error(err.message)
+    }
+}

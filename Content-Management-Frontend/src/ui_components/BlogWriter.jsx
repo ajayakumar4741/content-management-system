@@ -9,7 +9,7 @@ import { FormatDate } from '@/services/FormatDate'
 function BlogWriter({blog}) {
   return (
     <div>
-       <Link to={''}>
+       <Link to={`/profile/${blog.author.full_name}`}>
     <div className="flex items-center gap=4 ">
 
       

@@ -14,6 +14,7 @@ class UserProfile(models.Model):
     twitter = models.URLField(blank=True,null=True,max_length=255)
     instagram = models.URLField(blank=True,null=True,max_length=255)
     youtube = models.URLField(blank=True,null=True,max_length=255)
+    job_title = models.CharField(max_length=50, blank=True, null=True)
     
     def __str__(self):
         return self.full_name

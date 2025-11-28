@@ -5,7 +5,7 @@ import { HiPencilAlt } from 'react-icons/hi'
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
 import { BsTwitterX } from 'react-icons/bs'
 
-function Hero({userInfo}) {
+function Hero({userInfo,authUsername,toggleModal}) {
   return (
     <div className="padding-x py-9 max-container flex flex-col items-center justify-center gap-4 bg-[#F6F6F7] dark:bg-[#242535] rounded-md">
       <div className="flex gap-4">
@@ -24,14 +24,15 @@ function Hero({userInfo}) {
             {userInfo?.job_title || ''}
           </p>
         </span>
-
+          
         
-          <span>
+          
+            {userInfo?.full_name === authUsername && <span> 
             <HiPencilAlt
-              className="dark:text-white text-2xl cursor-pointer"
-              
-            />
-          </span>
+              className="dark:text-white text-2xl cursor-pointer" onClick={toggleModal} />
+              </span>
+            }
+          
         
       </div>
 

@@ -32,12 +32,12 @@ function App() {
       <Routes>
         <Route path="/" element={<AppLayout isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} username={username} setUsername={setUsername} />}>
       <Route index element={<HomePage />} />
-      <Route path='profile/:username' element={<ProfilePage />} />
+      <Route path='profile/:username' element={<ProfilePage authUsername={username} />} />
       <Route path="blogs/:slug" element={<DetailPage username={username} isAuthenticated={isAuthenticated} />} />
       <Route path='/signup' element={<SignupPage />} />
       <Route path='/create_post' element={<ProtectedRoute><CreatePostPage isAuthenticated={isAuthenticated} /></ProtectedRoute>} />
       <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} />} />
-      {/* <Route path="profile" element={<ProfilePage />} /> */}
+      
     </Route>
 
       </Routes>

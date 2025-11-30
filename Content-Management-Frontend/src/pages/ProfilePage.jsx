@@ -30,7 +30,7 @@ function ProfilePage({authUsername}) {
       <BlogContainer blogs={blogs} title={`🧑‍💻 ${username}'s Posts`} />
       {showModal && (
         <Modal toggleModal={toggleModal} >
-          <SignupPage userInfo={data} updateForm={true} />
+          <SignupPage userInfo={data} updateForm={true} toggleModal={toggleModal} />
         </Modal>
       )}
     </>

@@ -3,15 +3,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { registerUser } from '@/services/apiBlog';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { registerUser, updateProfile } from '@/services/apiBlog';
 import { toast } from 'react-toastify';
 import SmallSpinner from '@/ui_components/SmallSpinner';
+import { Textarea } from '@/components/ui/textarea';
 
-function SignupPage({updateForm,userInfo}) {
-  const { register, handleSubmit, formState, reset, watch } = useForm();
+function SignupPage({updateForm,userInfo,toggleModal}) {
+  const { register, handleSubmit, formState, reset, watch } = useForm({defaultValues: userInfo ? userInfo : {}});
   const { errors } = formState;
   const password = watch("password");
+  const queryClient = useQueryClient()
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (data) => updateProfile(data),
+    onSuccess: () => {
+      toast.success("Profile updated successfully !!!")
+      toggleModal()
+      queryClient.invalidateQueries({queryKey: ['users',username]})
+    },
+    onError: (err) => {
+      toast.error(err)
+    }
+  })
 
   const mutation = useMutation({
     mutationFn: (data) => registerUser(data),
@@ -25,7 +39,23 @@ function SignupPage({updateForm,userInfo}) {
   });
 
   function onSubmitData(data) {
-    mutation.mutate(data);
+    if(updateForm){
+      const formData = new FormData()
+      formData.append('full_name',data.full_name)
+      formData.append('job_title',data.job_title)
+      formData.append('bio',data.bio)
+      if(data.profile_picture && data.profile_picture[0]){
+        if(data.profile_picture[0] !== '/'){
+          formData.append('profile_picture',data.profile_picture)
+        }
+      }
+      updateProfile.mutate(formData)
+
+    }
+    else{
+      mutation.mutate(data);
+    }
+    
   }
 
   return (
@@ -41,7 +71,7 @@ function SignupPage({updateForm,userInfo}) {
         </p>
       </div>
 
-      {/* Username */}
+      {updateForm || 
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="username" className="dark:text-[97989F]">Username</Label>
         <Input
@@ -58,9 +88,9 @@ function SignupPage({updateForm,userInfo}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.username && <small className='text-red-700'>{errors.username.message}</small>}
-      </div>
+      </div>}
 
-      {/* First Name */}
+      {updateForm || 
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="first_name">First Name</Label>
         <Input
@@ -77,9 +107,9 @@ function SignupPage({updateForm,userInfo}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.first_name && <small className='text-red-700'>{errors.first_name.message}</small>}
-      </div>
+      </div>}
 
-      {/* Last Name */}
+      {updateForm || 
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="last_name">Last Name</Label>
         <Input
@@ -96,9 +126,82 @@ function SignupPage({updateForm,userInfo}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.last_name && <small className='text-red-700'>{errors.last_name.message}</small>}
+      </div>}
+
+      <div className="flex flex-col gap-2 mb-2">
+        <Label htmlFor="last_name">Full Name</Label>
+        <Input
+          type="text"
+          id="last_name"
+          placeholder="Enter full name"
+          {...register('full_name', {
+            required: 'Full name is required',
+            minLength: {
+              value: 3,
+              message: "Full name must be at least 3 characters long"
+            }
+          })}
+          className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
+        />
+        {errors?.full_name && <small className='text-red-700'>{errors.full_name.message}</small>}
       </div>
 
-      {/* Password */}
+      {updateForm && <div className="flex flex-col gap-2 mb-2">
+        <Label htmlFor="job_title" className="dark:text-[97989F]">
+          Job Title
+        </Label>
+        <Input
+          type="text"
+          id="job_title"
+          placeholder="Enter Job Title"
+          {...register("job_title", {
+            required: "Your job title is required",
+            minLength: {
+              value: 3,
+              message: "Your job title must be at least 3 characters",
+            },
+          })}
+          className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
+        />
+        {errors?.job_title?.message && (
+          <InputError error={errors.job_title.message} />
+        )}
+      </div>}
+
+      {updateForm && <div className="flex flex-col gap-2 mb-2">
+        <Label htmlFor="content">Bio</Label>
+        <Textarea
+          id="content"
+          placeholder="Tell us more about you"
+          {...register("bio", {
+            required: "Your bio is required",
+            minLength: {
+              value: 10,
+              message: "The content must be at least 10 characters",
+            },
+          })}
+          className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[180px]  w-[300px] text-justify"
+        />
+        {errors?.bio?.message && (
+          <InputError error={errors.bio.message} />
+        )}
+      </div>}
+
+      {updateForm && <div className="flex flex-col gap-2 mb-2">
+        <Label htmlFor="profile_picture">Profile Picture</Label>
+        <Input
+          type="file"
+          id="picture"
+          {...register("profile_picture", {
+            required: false,
+          })}
+          className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-full max-sm:w-[300px] max-sm:text-[14px]"
+        />
+
+        
+      </div>}
+
+      {updateForm || 
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="password">Password</Label>
         <Input
@@ -115,9 +218,9 @@ function SignupPage({updateForm,userInfo}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.password && <small className='text-red-700'>{errors.password.message}</small>}
-      </div>
+      </div>}
 
-      {/* Confirm Password */}
+      {updateForm || 
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="confirmPassword">Confirm Password</Label>
         <Input
@@ -135,7 +238,7 @@ function SignupPage({updateForm,userInfo}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.confirmPassword && <small className='text-red-700'>{errors.confirmPassword.message}</small>}
-      </div>
+      </div>}
 
       {/* Submit Button */}
       <div className="w-full flex items-center justify-center flex-col my-4">
@@ -167,10 +270,10 @@ function SignupPage({updateForm,userInfo}) {
           )}
         </button>
         }
-
+        {updateForm || 
         <p className="text-[14px] mt-2">
           Already have an account? <Link to="/login" className="text-blue-600 underline">Sign In</Link>
-        </p>
+        </p>}
       </div>
     </form>
   );

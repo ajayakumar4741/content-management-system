@@ -104,3 +104,16 @@ export async function getUserInfo(full_name){
         throw new Error(err.message)
     }
 }
+
+export async function updateProfile(data){
+    try{
+    const response = await api.put(`update_profile/`,data)
+    return response.data
+    }
+    catch(err){
+        if(err.response){
+            throw new Error(err?.response?.data.message || 'Failed to update profile...')
+        }
+        throw new Error(err.message)
+    }
+}

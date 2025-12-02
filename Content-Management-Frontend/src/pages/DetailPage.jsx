@@ -61,7 +61,7 @@ function DetailPage({username,isAuthenticated}) {
             {blog.title}
           </h2>
 
-            {isAuthenticated && username === blog.author.full_name && <span className="flex justify-between items-center gap-2">
+            {isAuthenticated && username === blog.author.username && <span className="flex justify-between items-center gap-2">
               <HiPencilAlt onClick={toggleModal}  className="dark:text-white text-3xl cursor-pointer" />
 
               <MdDelete onClick={handleDeleteBlog} className="dark:text-white text-3xl cursor-pointer" />

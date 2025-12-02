@@ -18,7 +18,7 @@ function Hero({userInfo,authUsername,toggleModal}) {
 
         <span>
           <p className="text-[18px] text-[#181A2A] dark:text-white">
-            {userInfo?.full_name}
+            {userInfo?.first_name} {userInfo?.last_name}
           </p>
           <p className="text-[14px] text-[#696A75] font-thin dark:text-[#BABABF]">
             {userInfo?.job_title || ''}
@@ -27,7 +27,7 @@ function Hero({userInfo,authUsername,toggleModal}) {
           
         
           
-            {userInfo?.full_name === authUsername && <span> 
+            {userInfo?.username === authUsername && <span> 
             <HiPencilAlt
               className="dark:text-white text-2xl cursor-pointer" onClick={toggleModal} />
               </span>

@@ -11,5 +11,5 @@ urlpatterns = [
     path('get_username/',get_username,name='get_username'),
     path("blog_pagination", blog_pagination, name="blog_pagination"),
     path("blogs/<slug:slug>/", blogs, name="blogs"),
-    path("get_userinfo/<str:full_name>/", get_userinfo, name="blogs"),
+    path("get_userinfo/<str:username>/", get_userinfo, name="get_userinfo"),
 ]

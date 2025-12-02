@@ -1,23 +1,30 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
 
 # Create your models here.
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
-    full_name = models.CharField(max_length=200)
-    bio = models.TextField(null=True,blank=True)
-    profile_picture = models.ImageField(upload_to='profile',blank=True,null=True)
-    facebook = models.URLField(blank=True,null=True,max_length=255)
-    twitter = models.URLField(blank=True,null=True,max_length=255)
-    instagram = models.URLField(blank=True,null=True,max_length=255)
-    youtube = models.URLField(blank=True,null=True,max_length=255)
+class CustomUser(AbstractUser):
+    bio = models.TextField(blank=True, null=True)
+    profile_picture = models.ImageField(upload_to="profile/", blank=True, null=True)
+    profile_picture_url = models.URLField(blank=True, null=True)
     job_title = models.CharField(max_length=50, blank=True, null=True)
-    
+
+    facebook = models.URLField(max_length=255, blank=True, null=True)
+    youtube = models.URLField(max_length=255, blank=True, null=True)
+    instagram = models.URLField(max_length=255, blank=True, null=True)
+    twitter = models.URLField(max_length=255, blank=True, null=True)
+    linkedin = models.URLField(max_length=255, blank=True, null=True)
+
+
+
+
     def __str__(self):
-        return self.full_name
+        return self.username
+    
+
     
 class Blog(models.Model):
     CATEGORY = (("Frontend", "Frontend"),
@@ -29,7 +36,7 @@ class Blog(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True,blank=True,max_length=255)
     content = models.TextField()
-    author = models.ForeignKey(UserProfile,on_delete=models.SET_NULL,related_name='blogs',null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,related_name='blogs',null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     published_at = models.DateTimeField(blank=True,null=True)

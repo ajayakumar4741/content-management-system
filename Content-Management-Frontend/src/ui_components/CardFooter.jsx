@@ -6,7 +6,7 @@ import { FormatDate } from '@/services/FormatDate';
 
 function CardFooter({blog}) {
  return (
-    <Link to={`/profile/${blog.author.full_name}`}>
+    <Link to={`/profile/${blog.author.username}`}>
     <div className="flex items-center gap=4 ">
       <span className="flex items-center gap-2">
         <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
@@ -17,7 +17,7 @@ function CardFooter({blog}) {
         </div>
 
         <small className="text-[#97989F] text-[12px] font-semibold">
-          {blog.author.full_name} 
+          {blog.author.first_name} {blog.author.last_name} 
         </small>
       </span>
 

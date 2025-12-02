@@ -8,6 +8,8 @@ import { registerUser, updateProfile } from '@/services/apiBlog';
 import { toast } from 'react-toastify';
 import SmallSpinner from '@/ui_components/SmallSpinner';
 import { Textarea } from '@/components/ui/textarea';
+import InputErrors from '@/ui_components/InputErrors';
+
 
 function SignupPage({updateForm,userInfo,toggleModal}) {
   const { register, handleSubmit, formState, reset, watch } = useForm({defaultValues: userInfo ? userInfo : {}});
@@ -20,7 +22,7 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
     onSuccess: () => {
       toast.success("Profile updated successfully !!!")
       toggleModal()
-      queryClient.invalidateQueries({queryKey: ['users',username]})
+      queryClient.invalidateQueries({queryKey: ['users',userInfo?.username]})
     },
     onError: (err) => {
       toast.error(err)
@@ -41,15 +43,17 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
   function onSubmitData(data) {
     if(updateForm){
       const formData = new FormData()
-      formData.append('full_name',data.full_name)
+      formData.append('username',data.username)
+      formData.append('first_name',data.first_name)
+      formData.append('last_name',data.last_name)
       formData.append('job_title',data.job_title)
       formData.append('bio',data.bio)
       if(data.profile_picture && data.profile_picture[0]){
-        if(data.profile_picture[0] !== '/'){
-          formData.append('profile_picture',data.profile_picture)
+        if(data.profile_picture[0] != '/'){
+          formData.append('profile_picture',data.profile_picture[0])
         }
       }
-      updateProfile.mutate(formData)
+      updateProfileMutation.mutate(formData)
 
     }
     else{
@@ -71,7 +75,7 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
         </p>
       </div>
 
-      {updateForm || 
+      
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="username" className="dark:text-[97989F]">Username</Label>
         <Input
@@ -88,9 +92,8 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.username && <small className='text-red-700'>{errors.username.message}</small>}
-      </div>}
-
-      {updateForm || 
+      </div>
+ 
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="first_name">First Name</Label>
         <Input
@@ -107,9 +110,9 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.first_name && <small className='text-red-700'>{errors.first_name.message}</small>}
-      </div>}
+      </div>
 
-      {updateForm || 
+      
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="last_name">Last Name</Label>
         <Input
@@ -126,25 +129,9 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.last_name && <small className='text-red-700'>{errors.last_name.message}</small>}
-      </div>}
-
-      <div className="flex flex-col gap-2 mb-2">
-        <Label htmlFor="last_name">Full Name</Label>
-        <Input
-          type="text"
-          id="last_name"
-          placeholder="Enter full name"
-          {...register('full_name', {
-            required: 'Full name is required',
-            minLength: {
-              value: 3,
-              message: "Full name must be at least 3 characters long"
-            }
-          })}
-          className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
-        />
-        {errors?.full_name && <small className='text-red-700'>{errors.full_name.message}</small>}
       </div>
+
+      
 
       {updateForm && <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="job_title" className="dark:text-[97989F]">
@@ -164,7 +151,7 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
         />
         {errors?.job_title?.message && (
-          <InputError error={errors.job_title.message} />
+          <InputErrors error={errors.job_title.message} />
         )}
       </div>}
 
@@ -183,7 +170,7 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
           className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[180px]  w-[300px] text-justify"
         />
         {errors?.bio?.message && (
-          <InputError error={errors.bio.message} />
+          <InputErrors error={errors.bio.message} />
         )}
       </div>}
 
@@ -247,7 +234,7 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
           type="submit"
           className="bg-[#4B6BFB] text-white w-full py-3 px-2 rounded-md flex items-center justify-center gap-2"
         >
-          {mutation.isPending ? (
+          {updateProfileMutation.isPending ? (
             <>
               <SmallSpinner />
               <small className='text-[16px]'>Updating profile...</small>

@@ -9,7 +9,7 @@ import { FormatDate } from '@/services/FormatDate'
 function BlogWriter({blog}) {
   return (
     <div>
-       <Link to={`/profile/${blog.author.full_name}`}>
+       <Link to={`/profile/${blog.author.username}`}>
     <div className="flex items-center gap=4 ">
 
       
@@ -22,7 +22,7 @@ function BlogWriter({blog}) {
         </div>
 
         <small className="text-[#696A75] text-[14px]">
-          {blog.author.full_name}
+          {blog.author.first_name} {blog.author.last_name}
         </small>
       </span>
 

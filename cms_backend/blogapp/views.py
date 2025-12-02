@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
@@ -31,7 +31,7 @@ def registerUser(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_blog(request):
-    user = request.user.user_profile
+    user = request.user
     serializer = BlogSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(author=user)
@@ -54,7 +54,7 @@ def blogs(request,slug):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_blog(request,pk):
-    user = request.user.user_profile
+    user = request.user
     blog = Blog.objects.get(id=pk)
     if blog.author != user:
         return Response({'error':'Not authorized'},status=status.HTTP_403_FORBIDDEN)
@@ -68,7 +68,7 @@ def update_blog(request,pk):
 @permission_classes([IsAuthenticated])
 def delete_blog(request,pk):
     blog = Blog.objects.get(id=pk)
-    if blog.author != request.user.user_profile:
+    if blog.author != request.user:
         return Response({'error':'Not authorized'},status=status.HTTP_403_FORBIDDEN)
     else:
         blog.delete()
@@ -77,29 +77,36 @@ def delete_blog(request,pk):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
-    try:
-        profile,created = UserProfile.objects.get_or_create(user=request.user)  # Access the related UserProfile via OneToOneField
-    except UserProfile.DoesNotExist:
-        return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-    serializer = UpdateUserProfileSerializer(profile,data=request.data, partial=True)
+    user = request.user
+    serializer = UpdateUserProfileSerializer(user,data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_username(request):
-    user = request.user.user_profile
-    username = user.full_name
+    user = request.user
+    username = user.username
     print(username)
     return Response({"username":username})
 
+# @api_view(['GET'])
+# def get_userinfo(request,username):
+#     User = get_user_model()
+#     user = User.objects.get(username=username)
+#     serializer = UserInfoSerializer(user)
+#     return Response(serializer.data)
 @api_view(['GET'])
-def get_userinfo(request,full_name):
-    User = UserProfile
-    user = User.objects.get(full_name=full_name)
+def get_userinfo(request, username):
+    User = get_user_model()
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
+
     serializer = UserInfoSerializer(user)
     return Response(serializer.data)
 

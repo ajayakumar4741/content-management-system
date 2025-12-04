@@ -10,6 +10,7 @@ import CreatePostPage from './pages/CreatePostPage'
 import LoginPage from './pages/LoginPage'
 import ProtectedRoute from './ui_components/ProtectedRoute'
 import { getUsername } from './services/apiBlog'
+import NotFoundPage from './pages/NotFoundPage'
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
       <Routes>
         <Route path="/" element={<AppLayout isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} username={username} setUsername={setUsername} />}>
       <Route index element={<HomePage />} />
+      <Route path='*' element={<NotFoundPage />}/>
       <Route path='profile/:username' element={<ProfilePage authUsername={username} />} />
       <Route path="blogs/:slug" element={<DetailPage username={username} isAuthenticated={isAuthenticated} />} />
       <Route path='/signup' element={<SignupPage />} />

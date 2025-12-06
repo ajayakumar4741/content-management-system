@@ -12,4 +12,6 @@ urlpatterns = [
     path("blog_pagination", blog_pagination, name="blog_pagination"),
     path("blogs/<slug:slug>/", blogs, name="blogs"),
     path("get_userinfo/<str:username>/", get_userinfo, name="get_userinfo"),
+    path("api/subscribe/", subscribe, name="subscribe"),
+
 ]

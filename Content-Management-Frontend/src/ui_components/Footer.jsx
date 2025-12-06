@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaInstagram } from "react-icons/fa";
 import { FaFacebookF } from "react-icons/fa";
 import { BsTwitterX } from "react-icons/bs";
@@ -6,6 +6,35 @@ import { FaYoutube } from "react-icons/fa";
 import { CiMail } from "react-icons/ci";
 
 function Footer() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubscribe = async () => {
+    if (!email) {
+      setMessage("Please enter a valid email.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8000/api/subscribe/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setMessage("Subscription successful! Check your inbox.");
+        setEmail("");
+      } else {
+        setMessage("Subscription failed. Try again.");
+      }
+    } catch (error) {
+      setMessage("Error connecting to server.");
+    }
+  };
+
   return (
     <footer className="bg-[#F6F6F7] padding-x py-16 max-container dark:bg-[#141624]">
       <div className="flex max-lg:gap-9 lg:gap-4 flex-wrap max-md:justify-center justify-between">
@@ -57,14 +86,18 @@ function Footer() {
           </p>
           <div className="w-full relative">
             <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
               placeholder="Your Email"
-              className="border border-[#DCDDDF] rounded-sm h-[40px] px-3 py-3 w-full text-[14px] dark:bg-[#181A2A] "
+              className="border border-[#DCDDDF] rounded-sm h-[40px] px-3 py-3 w-full text-[14px] 
+             dark:bg-[#181A2A] dark:text-white dark:border-[#97989F]"
             />
             <CiMail className="absolute top-[12px] right-[10px] text-[16px] dark:text-[#97989F]" />
           </div>
-          <button className="bg-[#4B6BFB] text-[#FFFFFF] text-[16px] rounded-md w-full py-3">
+          <button onClick={handleSubscribe} className="bg-[#4B6BFB] text-[#FFFFFF] text-[16px] rounded-md w-full py-3">
             Subscribe
           </button>
+          {message && <p className="text-sm mt-2 text-green-600">{message}</p>}
         </div>
       </div>
 

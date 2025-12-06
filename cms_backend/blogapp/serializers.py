@@ -1,6 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import *
+from .models import Subscriber
+
+class SubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscriber
+        fields = ['email']
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     

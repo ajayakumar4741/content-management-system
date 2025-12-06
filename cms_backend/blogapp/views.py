@@ -1,4 +1,3 @@
-from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
@@ -7,7 +6,26 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import *
 from rest_framework.pagination import PageNumberPagination
-# Create your views here.
+from rest_framework.decorators import api_view
+from django.core.mail import send_mail
+
+
+@api_view(['POST'])
+def subscribe(request):
+    serializer = SubscriberSerializer(data=request.data)
+    if serializer.is_valid():
+        subscriber = serializer.save()
+
+        # Send confirmation email
+        send_mail(
+            subject="Subscription Successful - TechScribe",
+            message="Thank you for subscribing! You'll receive blog updates soon.",
+            from_email=None,  # Uses DEFAULT_FROM_EMAIL
+            recipient_list=[subscriber.email],
+        )
+
+        return Response({"message": "Subscribed successfully!"}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class BlogListPagination(PageNumberPagination):
     page_size = 3

@@ -5,9 +5,18 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import *
+from .forms import *
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 from django.core.mail import send_mail
+from captcha.helpers import captcha_image_url
+from captcha.models import CaptchaStore
+
+@api_view(["GET"])
+def get_captcha(request):
+    new_key = CaptchaStore.generate_key()
+    image_url = captcha_image_url(new_key)
+    return Response({"key": new_key, "image_url": image_url})
 
 
 @api_view(['POST'])
@@ -40,10 +49,15 @@ def blog_pagination(request):
 
 @api_view(['POST'])
 def registerUser(request):
+    
+    form = RegistrationForm(request.data)
+    if not form.is_valid():
+        return Response({"error": "Captcha incorrect or form invalid", "details": form.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
     serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])

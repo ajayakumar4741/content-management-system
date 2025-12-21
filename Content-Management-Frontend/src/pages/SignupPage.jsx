@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import SmallSpinner from '@/ui_components/SmallSpinner';
 import { Textarea } from '@/components/ui/textarea';
 import InputErrors from '@/ui_components/InputErrors';
+import axios from 'axios';
 
 
 function SignupPage({updateForm,userInfo,toggleModal}) {
@@ -16,6 +17,23 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
   const { errors } = formState;
   const password = watch("password");
   const queryClient = useQueryClient()
+  const [captchaImage, setCaptchaImage] = useState("");
+  const [captchaKey, setCaptchaKey] = useState("");
+
+  useEffect(()=>{
+    loadCaptcha()
+  },[])
+
+  const loadCaptcha = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/api/get_captcha/");
+      setCaptchaKey(res.data.key);
+      setCaptchaImage("http://localhost:8000" + res.data.image_url);
+    } catch (err) {
+      toast.error("Failed to load captcha");
+    }
+  };
+
 
   const updateProfileMutation = useMutation({
     mutationFn: (data) => updateProfile(data),
@@ -34,11 +52,14 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
     onSuccess: () => {
       toast.success("Account created successfully!");
       reset();
+      loadCaptcha(); // refresh captcha after success
     },
     onError: (err) => {
-      toast.error(err.message);
+      toast.error(err.response?.data?.error || "Captcha failed or form invalid");
+      loadCaptcha(); // refresh captcha after failure
     }
   });
+
 
   function onSubmitData(data) {
     if(updateForm){
@@ -57,7 +78,11 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
 
     }
     else{
-      mutation.mutate(data);
+      mutation.mutate({
+        ...data,
+        captcha_0: captchaKey,
+        captcha_1: data.captcha_value
+      });
     }
     
   }
@@ -74,7 +99,7 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
           'Create your account to get started!'}
         </p>
       </div>
-
+      
       
       <div className="flex flex-col gap-2 mb-2">
         <Label htmlFor="username" className="dark:text-[97989F]">Username</Label>
@@ -226,6 +251,30 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
         />
         {errors?.confirmPassword && <small className='text-red-700'>{errors.confirmPassword.message}</small>}
       </div>}
+
+      {!updateForm && (
+        <div className="flex flex-col gap-2 mb-2">
+          <Label htmlFor="captcha">Captcha</Label>
+          {captchaImage && (
+            <img src={captchaImage} alt="captcha" className="border p-2 mb-2" />
+          )}
+          <Input
+            type="text"
+            id="captcha"
+            placeholder="Enter captcha text"
+            {...register('captcha_value', {
+              required: 'Captcha is required'
+            })}
+            className="border-2 border-[#141624] dark:border-[#3B3C4A] focus:outline-0 h-[40px] w-[300px]"
+          />
+          {errors?.captcha_value && <small className='text-red-700'>{errors.captcha_value.message}</small>}
+          <button type="button" onClick={loadCaptcha} className="text-blue-600 underline mt-1">
+            Reload Captcha
+          </button>
+        </div>
+      )}
+
+
 
       {/* Submit Button */}
       <div className="w-full flex items-center justify-center flex-col my-4">

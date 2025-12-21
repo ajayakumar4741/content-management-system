@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'blogapp',
     'rest_framework',
     'corsheaders',
+    'captcha',
 ]
 
 MIDDLEWARE = [

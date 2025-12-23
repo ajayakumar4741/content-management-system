@@ -20,18 +20,19 @@ export async function getBlog(slug){
     }
 }
 
-export async function registerUser(data){
-    try{
-        const response = api.post("register/",data)
-        return response.data
+export async function registerUser(data) {
+  try {
+    const response = await api.post("register/", data);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+
+    if (error.response?.status === 400) {
+      throw error; // 🔥 VERY IMPORTANT
     }
-    catch(error){
-        console.log(error)
-        if(error.status == 400){
-            throw new Error("Username already exist")
-        }
-        throw new Error(error)
-    }
+
+    throw error;
+  }
 }
 
 export async function signin(data){

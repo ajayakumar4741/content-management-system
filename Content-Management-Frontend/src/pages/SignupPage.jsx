@@ -47,18 +47,36 @@ function SignupPage({updateForm,userInfo,toggleModal}) {
     }
   })
 
+  // const mutation = useMutation({
+  //   mutationFn: (data) => registerUser(data),
+  //   onSuccess: () => {
+  //     toast.success("Account created successfully!");
+  //     reset();
+  //     loadCaptcha(); // refresh captcha after success
+  //   },
+  //   onError: (err) => {
+  //     toast.error(err);
+  //     loadCaptcha(); // refresh captcha after failure
+  //   }
+  // });
+
   const mutation = useMutation({
-    mutationFn: (data) => registerUser(data),
-    onSuccess: () => {
-      toast.success("Account created successfully!");
-      reset();
-      loadCaptcha(); // refresh captcha after success
-    },
-    onError: (err) => {
-      toast.error(err.response?.data?.error || "Captcha failed or form invalid");
-      loadCaptcha(); // refresh captcha after failure
-    }
-  });
+  mutationFn: registerUser,
+  onSuccess: () => {
+    toast.success("Account created successfully!");
+    reset();
+    loadCaptcha();
+  },
+  onError: (err) => {
+    const msg =
+      err?.response?.data?.captcha?.[0] ||
+      "Invalid captcha. Please try again.";
+
+    toast.error(msg);
+    loadCaptcha();
+  },
+});
+
 
 
   function onSubmitData(data) {

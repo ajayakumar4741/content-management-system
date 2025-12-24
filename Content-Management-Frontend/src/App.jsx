@@ -11,6 +11,8 @@ import LoginPage from './pages/LoginPage'
 import ProtectedRoute from './ui_components/ProtectedRoute'
 import { getUsername } from './services/apiBlog'
 import NotFoundPage from './pages/NotFoundPage'
+import ErrorBoundary from './pages/ErrorBoundary'
+import FallbackUI from './ui_components/FallBackUi'
 
 
 function App() {
@@ -38,7 +40,7 @@ function App() {
       <Route path="blogs/:slug" element={<DetailPage username={username} isAuthenticated={isAuthenticated} />} />
       <Route path='/signup' element={<SignupPage />} />
       <Route path='/create_post' element={<ProtectedRoute><CreatePostPage isAuthenticated={isAuthenticated} /></ProtectedRoute>} />
-      <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} />} />
+      <Route path='/login' element={<ErrorBoundary> <LoginPage setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} /></ErrorBoundary>} />
       
     </Route>
 
